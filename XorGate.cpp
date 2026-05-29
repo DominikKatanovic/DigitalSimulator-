@@ -17,14 +17,23 @@ XorGate::XorGate(std::string n) : Component(n) {
  * Logik: (A AND NOT B) OR (NOT A AND B)
  */
 void XorGate::evaluate() {
-    if (m_inputs[0] && m_inputs[1]) {
-        bool valA = m_inputs[0]->getOutput();
-        bool valB = m_inputs[1]->getOutput();
-        m_output = (valA && !valB) || (!valA && valB);
-    } else {
-        std::cerr << "[WARNUNG] " << m_name << ": XOR-Gatter hat unverbundene Pins (Floating)!" << std::endl;
-        m_output = false;
+    if (m_alreadyCalculated) {
+        return; // Verhindert doppelte Berechnung bei zyklischen Verbindungen (optional)
     }
+
+    if (m_inputs[0] != nullptr) {
+        m_inputs[0]->evaluate();
+    }
+
+    if (m_inputs[1] != nullptr) {
+        m_inputs[1]->evaluate();
+    }
+
+    bool valA = (m_inputs[0] != nullptr) ? m_inputs[0]->getOutput() : false;  // Sicherer Fallback: false
+    bool valB = (m_inputs[1] != nullptr) ? m_inputs[1]->getOutput() : false;  // Sicherer Fallback: false
+    m_output = (valA && !valB) || (!valA && valB);
+
+    m_alreadyCalculated = true;
 }
 
 /**

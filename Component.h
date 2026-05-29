@@ -24,6 +24,7 @@ protected:
     bool m_output;
     std::vector<std::shared_ptr<Component>> m_inputs;  // ← Die "Kupferkabel"
 
+    bool m_alreadyCalculated = false; // Flag für Zyklus-Check (optional, für erweiterte Gattertypen)
 public:
     /**
      * Konstruktor: Initialisiert ein Gatter mit Namen
@@ -51,6 +52,11 @@ public:
      * Diese Methode MUSS von jeder abgeleiteten Klasse implementiert werden.
      */
     virtual void evaluate() = 0;
+
+    // Optional: Für erweiterte Gattertypen, um den Berechnungsstatus zurückzusetzen
+    virtual void reset() {
+        m_alreadyCalculated = false;
+    }
 
     /**
      * Gibt den aktuellen Zustand des Gatters aus

@@ -18,15 +18,26 @@ AndGate::AndGate(std::string n) : Component(n) {
  * - Wenn nein: Warnung + Fallback auf false (sicherer Zustand)
  */
 void AndGate::evaluate() {
-    // Floating Pin Check: Sind beide Kabel eingesteckt?
-    if (m_inputs[0] && m_inputs[1]) {
-        bool valA = m_inputs[0]->getOutput();
-        bool valB = m_inputs[1]->getOutput();
-        m_output = valA && valB;
-    } else {
-        std::cerr << "[WARNUNG] " << m_name << ": AND-Gatter hat unverbundene Pins (Floating)!" << std::endl;
-        m_output = false;  // Fallback-Zustand
+    if (m_alreadyCalculated) {
+        return; // Verhindert doppelte Berechnung bei zyklischen Verbindungen (optional)
     }
+    
+    // Floating Pin Check: Sind beide Kabel eingesteckt?
+    // Wenn ja dann soll es zum nächsten "Kind" gehen und das Ergebnis holen
+    if (m_inputs[0] != nullptr) {
+        m_inputs[0]->evaluate();
+    }
+
+    if (m_inputs[1] != nullptr) {
+        m_inputs[1]->evaluate();
+    }
+
+    // Berechnung der And-Logik
+    bool valA = (m_inputs[0] != nullptr) ? m_inputs[0]->getOutput() : false;  // Sicherer Fallback: false
+    bool valB = (m_inputs[1] != nullptr) ? m_inputs[1]->getOutput() : false;  // Sicherer Fallback: false
+    m_output = valA && valB;
+
+    m_alreadyCalculated = true;
 }
 
 /**

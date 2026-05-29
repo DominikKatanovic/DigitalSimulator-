@@ -16,14 +16,25 @@ OrGate::OrGate(std::string n) : Component(n) {
  * Floating Pin Check: Sind beide Kabel eingesteckt?
  */
 void OrGate::evaluate() {
-    if (m_inputs[0] && m_inputs[1]) {
-        bool valA = m_inputs[0]->getOutput();
-        bool valB = m_inputs[1]->getOutput();
-        m_output = valA || valB;
-    } else {
-        std::cerr << "[WARNUNG] " << m_name << ": OR-Gatter hat unverbundene Pins (Floating)!" << std::endl;
-        m_output = false;
+    if (m_alreadyCalculated) {
+        return; // Verhindert doppelte Berechnung bei zyklischen Verbindungen (optional)
     }
+
+    // Checken ob der Baum weiter läuft 
+    // Wenn der ptr nicht null ist dann soll das nächste Kind weiter berechnet werden 
+    if (m_inputs[0] != nullptr) {
+        m_inputs[0]->evaluate();
+    }
+    if (m_inputs[1] != nullptr) {
+        m_inputs[1]->evaluate();
+    }
+
+    // Berechnen der OR-Logik
+    bool valA = (m_inputs[0] != nullptr) ? m_inputs[0]->getOutput() : false;  // Sicherer Fallback: false
+    bool valB = (m_inputs[1] != nullptr) ? m_inputs[1]->getOutput() : false;  // Sicherer Fallback: false
+    m_output = valA || valB;
+
+    m_alreadyCalculated = true;
 }
 
 /**

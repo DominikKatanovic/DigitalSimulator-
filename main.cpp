@@ -42,10 +42,15 @@ int main() {
     // Datenquellen (Schalter)
     auto swA = std::make_shared<Switch>("Input A");
     auto swB = std::make_shared<Switch>("Input B");
+    auto swCarryIn = std::make_shared<Switch>("Carry In"); // Zusätzlicher Schalter für Volladdierer
     
     // Logikgatter
-    auto xorGate = std::make_shared<XorGate>("XOR (Summe)");
-    auto andGate = std::make_shared<AndGate>("AND (Carry)");
+    auto xorGate_1 = std::make_shared<XorGate>("XOR (Summe)");
+    auto xorGate_2 = std::make_shared<XorGate>("XOR (Summe 2)"); // Zusätztlicher XOR für Volladdierer
+    auto andGate_1 = std::make_shared<AndGate>("AND (Carry)");
+    auto andGate_2 = std::make_shared<AndGate>("AND (Carry 2)"); // Zusätztlicher AND für Volladdierer
+    auto orGate = std::make_shared<OrGate>("OR (Carry Out)"); // OR-Gatte um Carry-Bit und Ergebnis von AND2
+
     
     std::cout << "\n[SCHRITT 2] Schaltkreis verkabeln (DAG-Aufbau)...\n" << std::endl;
     
@@ -60,46 +65,58 @@ int main() {
     // └─────────────┤
     //              └──> AND
     
-    xorGate->connectInput(0, swA);    // XOR Pin 0 = Input A
-    xorGate->connectInput(1, swB);    // XOR Pin 1 = Input B
+    xorGate_1->connectInput(0, swA);    // XOR Pin 0 = Input A
+    xorGate_1->connectInput(1, swB);    // XOR Pin 1 = Input B
+
+    xorGate_2->connectInput(0, xorGate_1); // XOR2 Pin 0 = XOR1 Output (Summe)
+    xorGate_2->connectInput(1, swCarryIn); // XOR2 Pin 1 = Carry In (für Volladdierer)
     
-    andGate->connectInput(0, swA);    // AND Pin 0 = Input A
-    andGate->connectInput(1, swB);    // AND Pin 1 = Input B
+    andGate_1->connectInput(0, swA);    // AND Pin 0 = Input A
+    andGate_1->connectInput(1, swB);    // AND Pin 1 = Input B
+
+    andGate_2->connectInput(0, xorGate_1); // AND2 Pin 0 = XOR1 Output (Summe)
+    andGate_2->connectInput(1, swCarryIn); // AND2 Pin 1 = Carry In (für Volladdierer)
     
+    orGate->connectInput(0, andGate_1); // OR Pin 0 = AND1 Output (Carry von A und B)
+    orGate->connectInput(1, andGate_2); // OR Pin 1 = AND2 Output (Carry von Summe und Carry In)
+
+
     std::cout << "\n[SCHRITT 3] Wahrheitstabelle: Alle 4 Kombinationen testen...\n" << std::endl;
     std::cout << "┌─────┬─────┬────────┬───────┐" << std::endl;
     std::cout << "│  A  │  B  │ Summe  │ Carry │" << std::endl;
     std::cout << "├─────┼─────┼────────┼───────┤" << std::endl;
     
     // Test-Kombinationen: 0+0, 0+1, 1+0, 1+1
-    std::vector<std::pair<bool, bool>> testCases = {
-        {false, false},
-        {false, true},
-        {true, false},
-        {true, true}
+    std::vector<std::tuple<bool, bool, bool>> testCases = {
+        {false, false, false}, // A=0, B=0, CarryIn=0
+        {false, true, false},  // A=0, B=1, CarryIn=0
+        {true, false, false},  // A=1, B=0, CarryIn=0
+        {true, true, false}   // A=1, B=1, CarryIn=0
     };
     
     int testCount = 0;
     int passedCount = 0;
     
-    for (auto [a, b] : testCases) {
+    for (auto [a, b, carryIn] : testCases) {
         // KRITISCH: Erst Schalter setzen, DANN evaluate() aufrufen!
         swA->setState(a);
         swB->setState(b);
+        swCarryIn->setState(carryIn);
         
         // Evaluiere die Gatter (Pull-Prinzip: Sie holen sich Werte selbst)
-        xorGate->evaluate();
-        andGate->evaluate();
+        xorGate_2->evaluate();
+        orGate->evaluate();
         
         // Lese die Ergebnisse aus
-        bool summe = xorGate->getOutput();
-        bool carry = andGate->getOutput();
+        bool summe = xorGate_2->getOutput();
+        bool carry = orGate->getOutput();
         
         // Berechne erwartete Werte
         bool expectedSum = a ^ b;        // XOR
         bool expectedCarry = a && b;     // AND
         
         // Ausgabe der Testzelle
+        // Diese Testzeilen stimmen nicht mit der Wahrheitstabelle überein
         std::cout << "│  " << (a ? 1 : 0) << "  │  " << (b ? 1 : 0) << "  │";
         std::cout << "   " << (summe ? 1 : 0) << "    │";
         std::cout << "   " << (carry ? 1 : 0) << "   │";
@@ -127,8 +144,8 @@ int main() {
     
     swA->printState();
     swB->printState();
-    xorGate->printState();
-    andGate->printState();
+    xorGate_2->printState();
+    orGate->printState();
     
     // =====================================================================
     // Abschluss und Exit-Code
@@ -147,10 +164,3 @@ int main() {
         return 1;  // ← EXIT-CODE 1: FEHLER (Rotes Kreuz für CI)
     }
 }
-
-
-
-
-
-
-
