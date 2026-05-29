@@ -16,13 +16,15 @@ NotGate::NotGate(std::string n) : Component(n) {
  * Floating Pin Check: Ist das Kabel eingesteckt?
  */
 void NotGate::evaluate() {
-    if (m_inputs[0]) {
-        bool val = m_inputs[0]->getOutput();
-        m_output = !val;
-    } else {
+    if (m_inputs[0] != nullptr) {
+        m_inputs[0]->evaluate();
+    } 
+    else {
         std::cerr << "[WARNUNG] " << m_name << ": NOT-Gatter hat unverbundenen Pin (Floating)!" << std::endl;
         m_output = false;
     }
+    bool val = (m_inputs[0] != nullptr) ? m_inputs[0]->getOutput() : false;
+    m_output = !val;
 }
 
 /**

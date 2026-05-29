@@ -8,6 +8,7 @@
 #include "XorGate.h"
 #include "NandGate.h"
 #include "Switch.h"
+#include "Dflipflop.h"
 
 /**
  * =====================================================================
@@ -50,8 +51,24 @@ int main() {
     auto andGate_1 = std::make_shared<AndGate>("AND (Carry)");
     auto andGate_2 = std::make_shared<AndGate>("AND (Carry 2)"); // Zusätztlicher AND für Volladdierer
     auto orGate = std::make_shared<OrGate>("OR (Carry Out)"); // OR-Gatte um Carry-Bit und Ergebnis von AND2
+    auto notGate = std::make_shared<NotGate>("NOT (Inverter)"); // Optional: NOT-Gatter für erweiterte Tests
 
+    // Flipflops
+    auto dff = std::make_shared<Dflipflop>("D-FlipFlop"); // Optional: D-FlipFlop für erweiterte Tests
+
+    // Vectoren zur Dflipflop und speicherung aller Gates
+    std::vector<std::shared_ptr<Component>> allGates;
+    allGates.push_back(xorGate_1);
+    allGates.push_back(xorGate_2);
+    allGates.push_back(andGate_1);
+    allGates.push_back(andGate_2);
+    allGates.push_back(orGate);
+    allGates.push_back(notGate);
     
+    std::vector<std::shared_ptr<Dflipflop>> allFlipflops;
+    allFlipflops.push_back(dff);
+
+
     std::cout << "\n[SCHRITT 2] Schaltkreis verkabeln (DAG-Aufbau)...\n" << std::endl;
     
     // Verkabelung (Fan-Out!): Beide Schalter gehen an beide Gatter
@@ -80,6 +97,10 @@ int main() {
     orGate->connectInput(0, andGate_1); // OR Pin 0 = AND1 Output (Carry von A und B)
     orGate->connectInput(1, andGate_2); // OR Pin 1 = AND2 Output (Carry von Summe und Carry In)
 
+    notGate->connectInput(0, dff); // NOT Pin 0 = D-FlipFlop Output
+
+    dff->connectInput(0, notGate); // D-FlipFlop Pin 0 = NOT Output
+
 
     std::cout << "\n[SCHRITT 3] Wahrheitstabelle: Alle 4 Kombinationen testen...\n" << std::endl;
     std::cout << "┌─────┬─────┬────────┬───────┐" << std::endl;
@@ -106,10 +127,13 @@ int main() {
         // Evaluiere die Gatter (Pull-Prinzip: Sie holen sich Werte selbst)
         xorGate_2->evaluate();
         orGate->evaluate();
+        notGate->evaluate();
+
         
         // Lese die Ergebnisse aus
         bool summe = xorGate_2->getOutput();
         bool carry = orGate->getOutput();
+        bool dffstate = dff->getOutput();
         
         // Berechne erwartete Werte
         bool expectedSum = a ^ b;        // XOR
@@ -120,7 +144,25 @@ int main() {
         std::cout << "│  " << (a ? 1 : 0) << "  │  " << (b ? 1 : 0) << "  │";
         std::cout << "   " << (summe ? 1 : 0) << "    │";
         std::cout << "   " << (carry ? 1 : 0) << "   │";
-        
+
+
+          // for-Schleife um alle Gatter zu Reseten
+        for (int i = 0; i < 10; i++) {
+            for (auto& gate : allGates) {
+                gate->reset();
+            }
+
+            for (auto& gate : allGates) {
+                gate->evaluate();
+            }
+            
+            for (auto& flipflop : allFlipflops) {
+                flipflop->onClockTick(); // Simuliere eine Taktflanke für alle D-FlipFlops;
+            }
+
+            std::cout << "Tick:  " << i+1 << "    " << dff->getOutput() << "   |" << std::endl;
+        }
+     
         // Überprüfe Korrektheit
         testCount += 2;
         if (summe == expectedSum) {
@@ -146,6 +188,7 @@ int main() {
     swB->printState();
     xorGate_2->printState();
     orGate->printState();
+    dff->printState();
     
     // =====================================================================
     // Abschluss und Exit-Code
