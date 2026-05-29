@@ -5,7 +5,7 @@
  * Konstruktor des OrGate
  * Initialisiert die Pins (genau 2 Eingänge)
  */
-OrGate::OrGate(std::string n) : Gate(n) {
+OrGate::OrGate(std::string n) : Component(n) {
     m_inputs.resize(2);  // OR-Gatter hat exakt 2 Eingangs-Pins
     std::cout << "[" << m_name << "] OR-Gatter aktiviert (2 Pins)" << std::endl;
 }

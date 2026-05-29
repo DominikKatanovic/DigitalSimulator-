@@ -6,7 +6,7 @@
  * Ein Schalter hat KEINE Eingänge (m_inputs bleibt leer)
  * Der initiale Zustand ist OFF (false)
  */
-Switch::Switch(std::string n) : Gate(n) {
+Switch::Switch(std::string n) : Component(n) {
     m_inputs.resize(0);  // Schalter hat KEINE Eingänge!
     m_output = false;    // Initialer Zustand: OFF
     std::cout << "[" << m_name << "] Schalter erstellt (Datenquelle, kein Eingang)" << std::endl;

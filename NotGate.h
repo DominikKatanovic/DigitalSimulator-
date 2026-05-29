@@ -11,7 +11,7 @@
  * - Zieht sich Werte über m_inputs[0] (Pull-Prinzip)
  * - Prüft auf nullptr (Floating-Pin-Check)
  */
-class NotGate : public Gate {
+class NotGate : public Component {
 public:
     /**
      * Konstruktor: Nimmt einen Namen entgegen

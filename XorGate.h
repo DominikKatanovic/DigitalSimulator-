@@ -13,7 +13,7 @@
  * - Zieht sich Werte über m_inputs[] (Pull-Prinzip)
  * - Prüft auf nullptr (Floating-Pin-Check)
  */
-class XorGate : public Gate {
+class XorGate : public Component {
 public:
     /**
      * Konstruktor: Nimmt einen Namen entgegen

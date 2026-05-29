@@ -17,19 +17,19 @@
  * Alle spezifischen Gatter (AndGate, OrGate, NotGate, etc.) erben von dieser Klasse
  * und müssen die reine virtuelle Methode evaluate() implementieren.
  */
-class Gate {
+class Component {
 protected:
     // Geschützte Attribute
     std::string m_name;
     bool m_output;
-    std::vector<std::shared_ptr<Gate>> m_inputs;  // ← Die "Kupferkabel"
+    std::vector<std::shared_ptr<Component>> m_inputs;  // ← Die "Kupferkabel"
 
 public:
     /**
      * Konstruktor: Initialisiert ein Gatter mit Namen
      * @param n Der Name des Gatters (z.B. "Haupt-AND", "Carry")
      */
-    Gate(std::string n);
+    Component(std::string n);
 
     /**
      * Verbindet einen Eingang mit einem anderen Gatter (Kabel-Plugin)
@@ -37,7 +37,7 @@ public:
      * @param index Der Pin-Index (0, 1, ...)
      * @param source Das Quell-Gatter
      */
-    void connectInput(int index, std::shared_ptr<Gate> source);
+    void connectInput(int index, std::shared_ptr<Component> source);
 
     /**
      * Gibt den aktuellen Ausgangswert zurück
@@ -60,5 +60,5 @@ public:
     /**
      * Virtueller Destruktor: Sichert korrekte Cleanup-Reihenfolge bei Polymorphismus
      */
-    virtual ~Gate();
+    virtual ~Component();
 };

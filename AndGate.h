@@ -11,7 +11,7 @@
  * - Zieht sich Werte über m_inputs[] (Pull-Prinzip)
  * - Prüft auf nullptr (Floating-Pin-Check)
  */
-class AndGate : public Gate {
+class AndGate : public Component {
 public:
     /**
      * Konstruktor: Nimmt einen Namen entgegen

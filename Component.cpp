@@ -4,16 +4,16 @@
  * Konstruktor der Gate-Klasse
  * Initialisiert alle Attribute sicher
  */
-Gate::Gate(std::string n) 
+Component::Component(std::string n) 
     : m_name(n), m_output(false) {
-    std::cout << "[" << m_name << "] Gate erstellt" << std::endl;
+    std::cout << "[" << m_name << "] Component erstellt" << std::endl;
 }
 
 /**
  * Verbindet einen Eingang mit einem anderen Gatter (Kabel-Plugin)
  * Hardware-Schutzschaltung (Out-of-Bounds Check)
  */
-void Gate::connectInput(int index, std::shared_ptr<Gate> source) {
+void Component::connectInput(int index, std::shared_ptr<Component> source) {
     // Prüfen, ob der Pin physisch am Gatter existiert
     if (index >= 0 && index < static_cast<int>(m_inputs.size())) {
         m_inputs[index] = source;
@@ -28,13 +28,13 @@ void Gate::connectInput(int index, std::shared_ptr<Gate> source) {
 /**
  * Getter für den Ausgangswert
  */
-bool Gate::getOutput() const {
+bool Component::getOutput() const {
     return m_output;
 }
 
 /**
  * Virtueller Destruktor: Wird aufgerufen wenn Objekt zerstört wird
  */
-Gate::~Gate() {
+Component::~Component() {
     std::cout << "[DESTRUKTOR] Zerstöre Gate: " << m_name << std::endl;
 }

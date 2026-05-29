@@ -12,7 +12,7 @@
  * - Zieht sich Werte ueber m_inputs[] (Pull-Prinzip)
  * - Prueft auf nullptr (Floating-Pin-Check)
  */
-class NandGate : public Gate {
+class NandGate : public Component {
 public:
     /**
      * Konstruktor: Nimmt einen Namen entgegen

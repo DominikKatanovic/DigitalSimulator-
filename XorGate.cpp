@@ -5,7 +5,7 @@
  * Konstruktor des XorGate
  * Initialisiert die Pins (genau 2 Eingänge)
  */
-XorGate::XorGate(std::string n) : Gate(n) {
+XorGate::XorGate(std::string n) : Component(n) {
     m_inputs.resize(2);  // XOR-Gatter hat exakt 2 Eingangs-Pins
     std::cout << "[" << m_name << "] XOR-Gatter aktiviert (2 Pins)" << std::endl;
 }

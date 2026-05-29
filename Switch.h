@@ -13,7 +13,7 @@
  * Der Schalter ist die "Datenquelle" des DAGs.
  * Labor 7: Ein echte Datenquelle mit direkter setState()-Methode.
  */
-class Switch : public Gate {
+class Switch : public Component {
 public:
     /**
      * Konstruktor: Nimmt einen Namen entgegen

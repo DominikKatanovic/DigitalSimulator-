@@ -5,7 +5,7 @@
  * Konstruktor des NotGate
  * Initialisiert die Pins (genau 1 Eingang)
  */
-NotGate::NotGate(std::string n) : Gate(n) {
+NotGate::NotGate(std::string n) : Component(n) {
     m_inputs.resize(1);  // NOT-Gatter hat exakt 1 Eingangs-Pin
     std::cout << "[" << m_name << "] NOT-Gatter aktiviert (1 Pin)" << std::endl;
 }

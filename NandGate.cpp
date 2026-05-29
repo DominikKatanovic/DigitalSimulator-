@@ -5,7 +5,7 @@
  * Konstruktor des NandGate
  * Initialisiert die Pins (genau 2 Eingänge)
  */
-NandGate::NandGate(std::string n) : Gate(n) {
+NandGate::NandGate(std::string n) : Component(n) {
     m_inputs.resize(2);  // NAND-Gatter hat exakt 2 Eingangs-Pins
     std::cout << "[" << m_name << "] NAND-Gatter aktiviert (2 Pins)" << std::endl;
 }

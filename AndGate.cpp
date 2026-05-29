@@ -5,7 +5,7 @@
  * Konstruktor des AndGate
  * Initialisiert die Pins (genau 2 Eingänge) und ruft Basiskonstruktor auf
  */
-AndGate::AndGate(std::string n) : Gate(n) {
+AndGate::AndGate(std::string n) : Component(n) {
     m_inputs.resize(2);  // AND-Gatter hat exakt 2 Eingangs-Pins
     std::cout << "[" << m_name << "] AND-Gatter aktiviert (2 Pins)" << std::endl;
 }
